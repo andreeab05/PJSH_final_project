@@ -1,5 +1,6 @@
 package com.shelfService.shelfSyncBE.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,15 +22,15 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "book-category1")
     @OneToMany(mappedBy = "category1", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Book> booksSet1 = new HashSet<>();
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "book-category2")
     @OneToMany(mappedBy = "category2", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Book> booksSet2 = new HashSet<>();
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "book-category3")
     @OneToMany(mappedBy = "category3", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Book> booksSet3 = new HashSet<>();
 

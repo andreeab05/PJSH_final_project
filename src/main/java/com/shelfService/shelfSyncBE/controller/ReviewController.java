@@ -40,9 +40,9 @@ public class ReviewController {
 
     // Create a new review
     @PostMapping("/book/{bookId}")
-    public ResponseEntity<Review> createReview(@PathVariable Integer bookId, @RequestBody Review review) {
+    public ResponseEntity<Review> createReview(@PathVariable Integer bookId, @RequestParam Integer userId, @RequestBody Review review) {
         try {
-            Review createdReview = reviewService.createReview(bookId, review);
+            Review createdReview = reviewService.createReview(userId, bookId, review);
             return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

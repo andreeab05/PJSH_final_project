@@ -7,41 +7,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/books") // Endpoint-ul pentru cărți
+@RequestMapping("/api/books")
 public class BookController {
 
     @Autowired
     private BookService bookService;
 
-//    // Endpoint pentru a obține toate cărțile
-//    @GetMapping
-//    public ResponseEntity<List<Book>> getAllBooks() {
-//        List<Book> books = bookService.getAllBooks();
-//        return new ResponseEntity<>(books, HttpStatus.OK);
-//    }
-
     // Endpoint pentru a obține o carte după ID
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Book> getBookById(@PathVariable("id") Integer bookId) {
-//        try {
-//            Book book = bookService.getBookById(bookId);
-//            return new ResponseEntity<>(book, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Returnează 404 dacă nu găsește cartea
-//        }
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable("id") Integer bookId) {
+        try {
+            Book book = bookService.getBookById(bookId);
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
     // Endpoint pentru a crea o carte
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@RequestParam Integer uid, @RequestBody Book book) {
         try {
-            bookService.createBook(book);
-            return new ResponseEntity<>(book, HttpStatus.CREATED); // Returnează 201 la succes
+            bookService.createBook(uid, book);
+            return new ResponseEntity<>(book, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Returnează 400 în caz de eroare
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -52,9 +44,21 @@ public class BookController {
             // Setăm ID-ul cărții pentru a actualiza corect entitatea
             book.setBookId(bookId);
             bookService.updateBookById(book);
-            return new ResponseEntity<>(book, HttpStatus.OK); // Returnează 200 la succes
+            return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Returnează 404 dacă nu găsește cartea
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Endpoint pentru a adauga un reader la o carte
+    @PutMapping("/addReader/{id}")
+    public ResponseEntity<Book> addReader(@PathVariable("id") Integer bookId, @RequestParam Integer uid) {
+        try {
+            Book book = bookService.addReader(bookId, uid);
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("eroarea e" + e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -63,9 +67,9 @@ public class BookController {
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Integer bookId) {
         try {
             bookService.deleteBookById(bookId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Returnează 204 la succes
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Returnează 404 dacă nu găsește cartea
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

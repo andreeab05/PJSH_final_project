@@ -19,9 +19,9 @@ public class Book {
     @Column(name = "book_id")
     private Integer bookId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "uid", referencedColumnName = "uid")
-//    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "uid", referencedColumnName = "uid")
+    private Author author;
 
     @Column(name = "title")
     private String title;
@@ -32,17 +32,17 @@ public class Book {
     @Column(name = "pages")
     private Integer pages;
 
-    @JsonBackReference
+    @JsonBackReference(value = "book-category1")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category1_id", referencedColumnName = "category_id")
     private Category category1;
 
-    @JsonBackReference
+    @JsonBackReference(value = "book-category2")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category2_id", referencedColumnName = "category_id")
     private Category category2;
 
-    @JsonBackReference
+    @JsonBackReference(value = "book-category3")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category3_id", referencedColumnName = "category_id")
     private Category category3;
@@ -50,26 +50,30 @@ public class Book {
     @Column(name = "cover_link")
     private String cover_link;
 
-//    @ManyToMany(mappedBy = "readerBooks", fetch = FetchType.LAZY)
-//    private Set<User> users = new HashSet<>();
-//
-    @JsonBackReference
+    @ManyToMany(mappedBy = "readerBooks", fetch = FetchType.EAGER)
+    private Set<Reader> readers = new HashSet<>();
+
+    @JsonManagedReference(value = "book-listelement")
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ListElement> listElements = new HashSet<>();
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "book-reviews")
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "book", cascade = CascadeType.ALL)
     private Set<Review> reviewsSet = new HashSet<>();
 
     public Book() {
     }
 
-    public Book(String title, String description, Integer pages, String cover_link/*, User user*/, Category category1, Category category2, Category category3) {
+    public void addReader(Reader reader){
+        readers.add(reader);
+    }
+
+    public Book(String title, String description, Integer pages, String cover_link, Author author, Category category1, Category category2, Category category3) {
         this.title = title;
         this.description = description;
         this.pages = pages;
         this.cover_link = cover_link;
-        //this.user = user;
+        this.author = author;
         this.category1 = category1;
         this.category2 = category2;
         this.category3 = category3;

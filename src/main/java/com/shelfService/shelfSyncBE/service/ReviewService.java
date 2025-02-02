@@ -2,8 +2,10 @@ package com.shelfService.shelfSyncBE.service;
 
 import com.shelfService.shelfSyncBE.entity.Book;
 import com.shelfService.shelfSyncBE.entity.Review;
+import com.shelfService.shelfSyncBE.entity.User;
 import com.shelfService.shelfSyncBE.repository.BookRepository;
 import com.shelfService.shelfSyncBE.repository.ReviewRepository;
+import com.shelfService.shelfSyncBE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class ReviewService {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    UserRepository userRepository;
     public Review getReviewById(Integer reviewId) throws Exception{
         Optional<Review> review = reviewRepository.findById(reviewId);
         if (review.isPresent())
@@ -44,19 +49,22 @@ public class ReviewService {
         return reviews;
     }
 
-    public Review createReview(Integer bookId, Review review) throws Exception{
+    public Review createReview(Integer userId, Integer bookId, Review review) throws Exception{
         Optional<Book> optionalBook = bookRepository.findById(bookId);
-        //User optionalUser = userRepository.findByUid(addReviewDTO.getUid());
-
+        Book book;
         if(optionalBook.isEmpty())
             throw new Exception("{createReview} - Couldn't find book for book id " + bookId);
-//        if(optionalUser == null)
-//            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-
-//        if(reviewRepository.findByUserAndBook(optionalUser,optionalBook.get())!=null)
-//            return new ResponseEntity<>("Review already exists", HttpStatus.BAD_REQUEST);
-
+        else book = optionalBook.get();
+        book.getReviewsSet().add(review);
+        User user = userRepository.findByUid(userId);
+        if(user == null)
+            throw new Exception("User not found");
+        user.getReviewsSet().add(review);
+        review.setUser(user);
+        review.setBook(book);
+        userRepository.save(user);
         reviewRepository.save(review);
+        bookRepository.save(book);
         return review;
     }
     public Review updateReview(Review updateReview) throws Exception{

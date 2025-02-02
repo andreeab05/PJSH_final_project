@@ -1,4 +1,5 @@
 package com.shelfService.shelfSyncBE.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class ListElement {
     @Column(name = "current_pages")
     private Integer current_pages;
 
-    @JsonManagedReference
+    @JsonBackReference(value = "book-listelement")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
     private Book book;

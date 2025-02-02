@@ -1,6 +1,7 @@
 package com.shelfService.shelfSyncBE.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,18 +21,16 @@ public class Review {
     private Integer rating;
     @Column(name = "comment")
     private String comment;
-//    @Temporal(TemporalType.DATE)
-//    @Column(name = "date_modified")
-//    private LocalDate date_modified;
 
-    @JsonBackReference
+    @JsonBackReference(value = "book-reviews")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
     private Book book;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "uid", referencedColumnName = "uid")
-//    private User user;
+    @JsonBackReference(value = "user-review")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "uid", referencedColumnName = "uid")
+    private User user;
 
     public Review() {
     }
