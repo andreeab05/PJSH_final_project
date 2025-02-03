@@ -29,15 +29,15 @@ public class ListElement {
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
     private Book book;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "uid", referencedColumnName = "uid")
-//    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "uid", referencedColumnName = "uid")
+    private User user;
 
     public ListElement() {
     }
 
-    public ListElement(/*User user,*/ Book book, String progress, Integer current_pages) {
-        //this.user = user;
+    public ListElement(User user, Book book, String progress, Integer current_pages) {
+        this.user = user;
         this.book = book;
         this.progress = progress;
         this.current_pages = current_pages;

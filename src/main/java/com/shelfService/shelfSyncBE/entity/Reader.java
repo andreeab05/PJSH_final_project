@@ -15,6 +15,9 @@ public class Reader extends User {
     )
     private Set<Book> readerBooks = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<ListElement> bookProgress = new HashSet<>();
+
     public void addBook(Book book) {
         this.readerBooks.add(book);
         book.getReaders().add(this);

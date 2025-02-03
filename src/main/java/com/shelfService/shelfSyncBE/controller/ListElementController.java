@@ -25,19 +25,6 @@ public class ListElementController {
         }
     }
 
-    // Endpoint pentru a crea un element nou
-    @PostMapping
-    public ResponseEntity<ListElement> createElement(@RequestParam Integer bookId,
-                                                     @RequestParam String progress,
-                                                     @RequestParam Integer currentPages) {
-        try {
-            ListElement element = listElementService.createElement(bookId, progress, currentPages);
-            return new ResponseEntity<>(element, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-    }
-
     // Endpoint pentru a actualiza un element existent
     @PutMapping("/{elementId}")
     public ResponseEntity<ListElement> updateElement(@PathVariable Integer elementId,

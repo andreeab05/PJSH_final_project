@@ -2,9 +2,14 @@ package com.shelfService.shelfSyncBE.service;
 
 import com.shelfService.shelfSyncBE.entity.Book;
 import com.shelfService.shelfSyncBE.entity.ListElement;
+import com.shelfService.shelfSyncBE.entity.Reader;
+import com.shelfService.shelfSyncBE.entity.User;
+import com.shelfService.shelfSyncBE.events.progress.UpdateElementEvent;
 import com.shelfService.shelfSyncBE.repository.BookRepository;
 import com.shelfService.shelfSyncBE.repository.ListElementRepository;
+import com.shelfService.shelfSyncBE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +18,12 @@ import java.util.Optional;
 @Service
 public class ListElementService {
     @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
     ListElementRepository listElementRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     BookRepository bookRepository;
@@ -25,24 +35,23 @@ public class ListElementService {
         return element.get();
     }
 
-    public ListElement createElement(Integer bookId, String progress, Integer currentPages) throws Exception {
+    public ListElement createElement(Integer bookId, Integer userId, String progress, Integer currentPages) throws Exception {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
-        //User user = userRepository.findByUid(addElementDTO.getUid());
+        User user = userRepository.findByUid(userId);
 
-//        if(user==null)
-//            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        if(user==null)
+            throw new Exception("{createBookProgress} - User not found");
         if(optionalBook.isEmpty())
-            throw new Exception("{createElement} - Could not find book");
+            throw new Exception("{createBookProgress} - Could not find book");
 
-//        if(listElementRepository.findByUserAndBook(user,optionalBook.get())!=null)
-//            return new ResponseEntity<>("Entry already exists for uid and bookid", HttpStatus.BAD_REQUEST);
+        if(listElementRepository.findByUserAndBook((Reader) user,optionalBook.get())!=null)
+            throw new Exception("{createBookProgress} - Entry already exists for uid "+ userId +" and bookid " + bookId);
 
-        // Validate progress value (optional)
         if (!isValidProgress(progress)) {
-            throw new Exception("{createElement} - Invalid progress");
+            throw new Exception("{createBookProgress} - Invalid progress");
         }
 
-        ListElement element = new ListElement(optionalBook.get(), progress, currentPages);
+        ListElement element = new ListElement(user, optionalBook.get(), progress, currentPages);
 
         listElementRepository.save(element);
         return element;
@@ -60,7 +69,11 @@ public class ListElementService {
 
         element.get().setProgress(progress);
         element.get().setCurrent_pages(currentPages);
+
         ListElement newElem = listElementRepository.save(element.get());
+//        applicationContext.publishEvent(
+//                new UpdateElementEvent(this, elementId,newElem.getBook().getTitle(), "wtr", "nf", currentPages, 200)
+//        );
         return newElem;
     }
 

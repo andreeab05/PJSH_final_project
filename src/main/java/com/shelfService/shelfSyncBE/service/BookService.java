@@ -7,6 +7,7 @@ import com.shelfService.shelfSyncBE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,9 @@ public class BookService {
     UserRepository userRepository;
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    ListElementService listElementService;
 
 //    public List<Book> getAllBooksByAuthorId(String uid) {
 //    }
@@ -31,6 +35,7 @@ public class BookService {
         System.out.println("a gasit si cartea si readerul");
         if (optionalBook.get() != null) {
             Book book = optionalBook.get();
+            listElementService.createElement(bookId, readerId, "wtr", 0);
             book.addReader(reader);
             reader.addBook(book);
             bookRepository.save(book);
