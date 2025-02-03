@@ -35,10 +35,10 @@ public class Review {
     public Review() {
     }
 
-    public Review(Integer rating, String comment,/* User user,*/ Book book) {
+    public Review(Integer rating, String comment, User user, Book book) {
         this.rating = rating;
         this.comment = comment;
-        //this.user = user;
+        this.user = user;
         this.book = book;
         //this.date_modified = LocalDate.now();
     }

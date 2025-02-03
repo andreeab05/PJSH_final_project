@@ -14,14 +14,14 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     public Category getCategoryById(Integer categoryId) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-        if (optionalCategory.isPresent()) {
-            throw new Exception("{getCategoryId} - Cannot find categgory");
+        if (optionalCategory.isEmpty()) {
+            throw new Exception("{getCategoryId} - Cannot find category");
         }
         return optionalCategory.get();
     }
 
-    public void createCategory(Category category){
-        categoryRepository.save(category);
+    public Category createCategory(Category category){
+        return categoryRepository.save(category);
     }
 
     public void deleteCategory(Integer categoryId){

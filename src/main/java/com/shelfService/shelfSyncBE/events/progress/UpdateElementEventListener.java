@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UpdateElementEventListener {
-    //@EventListener
     @EventListener(condition = "#event.oldProgress != #event.newProgress || #event.currentPages > (#event.totalPages / 2)")
     public void handleUpdateElementEvent(UpdateElementEvent event) {
         System.out.println("Book "+ event.getBookTitle() + " progress updated " +

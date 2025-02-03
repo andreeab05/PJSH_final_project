@@ -25,21 +25,10 @@ public class ReviewService {
     UserRepository userRepository;
     public Review getReviewById(Integer reviewId) throws Exception{
         Optional<Review> review = reviewRepository.findById(reviewId);
-        if (review.isPresent())
+        if (review.isEmpty())
             throw new Exception("{getReviewById} - Couldn't find review");
         return review.get();
     }
-//
-//    public Response getReviewByUid(@RequestParam String uid, Integer bookId) {
-//        User user = userRepository.findByUid(uid);
-//        Optional <Book> book = bookRepository.findById(bookId);
-//        if(user == null || book.isEmpty())
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        Review review = reviewRepository.findByUserAndBook(user,book.get());
-//        if(review != null)
-//            return new ResponseEntity<>(new ReturnReviewDTO(review), HttpStatus.OK);
-//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//    }
 
     public List<Review> getReviewsByBookId(Integer bookId) throws Exception{
         Optional<Book> book = bookRepository.findById(bookId);

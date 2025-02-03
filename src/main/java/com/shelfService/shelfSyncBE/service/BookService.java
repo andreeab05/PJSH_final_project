@@ -32,7 +32,6 @@ public class BookService {
     public Book addReader(Integer bookId, Integer readerId) throws Exception {
         Reader reader = (Reader) userRepository.findByUid(readerId);
         Optional<Book> optionalBook = bookRepository.findById(bookId);
-        System.out.println("a gasit si cartea si readerul");
         if (optionalBook.get() != null) {
             Book book = optionalBook.get();
             listElementService.createElement(bookId, readerId, "wtr", 0);

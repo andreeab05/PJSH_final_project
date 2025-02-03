@@ -37,5 +37,9 @@ public class Category {
     public Category() {
     }
 
+    public Category(Integer categoryId, String name) {
+        this.categoryId = categoryId;
+        this.name = name;
+    }
 }
 

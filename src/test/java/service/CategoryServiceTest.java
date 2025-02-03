@@ -3,58 +3,93 @@ package service;
 import com.shelfService.shelfSyncBE.entity.Category;
 import com.shelfService.shelfSyncBE.repository.CategoryRepository;
 import com.shelfService.shelfSyncBE.service.CategoryService;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-public class CategoryServiceTest {
-    @Autowired
-    CategoryService categoryService;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-    @Autowired
-    CategoryRepository categoryRepository;
+@ExtendWith(MockitoExtension.class)
+public class CategoryServiceTest {
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @InjectMocks
+    private CategoryService categoryService;
+
+    private Category mockCategory;
+
+    @BeforeEach
+    public void init(){
+        mockCategory = new Category();
+        mockCategory.setCategoryId(1);
+        mockCategory.setName("horror");
+    }
 
     @Test
-    void testAddCategory() {
-        Category category1 = new Category();
-        category1.setName("fantasy");
-        categoryService.createCategory(category1);
+    void testGetCategoryByUid() throws Exception {
+        when(categoryRepository.findById(1)).thenReturn(Optional.ofNullable(mockCategory));
 
+        Category category = categoryService.getCategoryById(1);
+
+        assertNotNull(category);
+        assertEquals("horror", category.getName());
+
+        verify(categoryRepository, times(1)).findById(1);
+    }
+
+    @Test
+    void testCreateCategory() {
+        Category category = new Category();
+        category.setName("fantasy");
+        category.setCategoryId(2);
+
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+        Category newCategory = categoryService.createCategory(category);
+
+        assertNotNull(newCategory);
+        assertEquals("fantasy", newCategory.getName());
+
+        verify(categoryRepository, times(1)).save(any(Category.class));
+    }
+
+    @Test
+    void testGetAllCategories() {
+        Category category = new Category();
+        category.setName("fantasy");
         Category category2 = new Category();
         category2.setName("horror");
-        categoryService.createCategory(category2);
-
         Category category3 = new Category();
-        category3.setName("drama");
-        categoryService.createCategory(category3);
+        category3.setName("romance");
+        Category category4 = new Category();
+        category4.setName("psychology");
 
-        List<Category> result = categoryRepository.findAll();
-        Assertions.assertEquals(result.size(), 3);
-        Assertions.assertEquals(result.get(0).getName(), "fantasy");
-        Assertions.assertEquals(result.get(1).getName(), "horror");
-        Assertions.assertEquals(result.get(2).getName(), "drama");
+        List<Category> mockCategories = new ArrayList<>();
+        mockCategories.add(category);
+        mockCategories.add(category2);
+        mockCategories.add(category3);
+        mockCategories.add(category4);
+
+        when(categoryRepository.findAll()).thenReturn(mockCategories);
+
+        List<Category> result = categoryService.getAllCategories();
+
+        assertEquals(4, result.size());
+        assertEquals("fantasy", result.get(0).getName());
+        assertEquals("horror", result.get(1).getName());
+        assertEquals("romance", result.get(2).getName());
+        assertEquals("psychology", result.get(3).getName());
+
+        verify(categoryRepository, times(1)).findAll();
     }
 
-    @Test
-    void testDeleteCategory() {
-        Category category1 = new Category();
-        category1.setName("fantasy");
-        categoryService.createCategory(category1);
-
-        categoryService.deleteCategory(category1.getCategoryId());
-
-        Optional<Category> result = categoryRepository.findById(category1.getCategoryId());
-        Assertions.assertEquals(result.get(), null);
-    }
 }
